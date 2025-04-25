@@ -1,0 +1,1452 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مهندس الطاقة الشمسية الذكي - النسخة المتكاملة</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #2E86AB;
+            --secondary: #F18F01;
+            --dark: #333;
+            --light: #f8f9fa;
+            --danger: #EE6C4D;
+            --success: #5CB85C;
+            --dark-mode-bg: #1a1a1a;
+            --dark-mode-card: #2d2d2d;
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Tajawal', sans-serif;
+            line-height: 1.8;
+            color: var(--dark);
+            background-color: #f5f7fa;
+            transition: all 0.3s ease;
+        }
+        
+        body.dark-mode {
+            background-color: var(--dark-mode-bg);
+            color: #eee;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), #4CAF50);
+            color: white;
+            padding: 30px 0;
+            text-align: center;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+            position: relative;
+        }
+        
+        .dark-mode header {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            margin: 0;
+            font-size: 2.5rem;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .theme-toggle {
+            position: absolute;
+            left: 20px;
+            top: 20px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        
+        .theme-toggle:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.1);
+        }
+        
+        /* نظام الخطوات */
+        .wizard-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .wizard-nav {
+            flex: 1;
+            min-width: 250px;
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 20px;
+            height: fit-content;
+        }
+        
+        .dark-mode .wizard-nav {
+            background: var(--dark-mode-card);
+        }
+        
+        .wizard-content {
+            flex: 3;
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+        }
+        
+        .dark-mode .wizard-content {
+            background: var(--dark-mode-card);
+        }
+        
+        .nav-step {
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .nav-step:hover {
+            background: #f0f8ff;
+        }
+        
+        .dark-mode .nav-step:hover {
+            background: #333;
+        }
+        
+        .nav-step.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .nav-step.completed {
+            border-left: 4px solid var(--success);
+        }
+        
+        .step-icon {
+            font-size: 1.2rem;
+        }
+        
+        .step {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        
+        .step.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* أنماط النموذج */
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .dark-mode input,
+        .dark-mode select,
+        .dark-mode textarea {
+            background: #333;
+            border-color: #444;
+            color: #fff;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(46, 134, 171, 0.2);
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #1a6a8f;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: #f0f0f0;
+            color: var(--dark);
+        }
+        
+        .dark-mode .btn-secondary {
+            background: #333;
+            color: #eee;
+        }
+        
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+        
+        .dark-mode .btn-secondary:hover {
+            background: #444;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        
+        /* نتائج وتحليلات */
+        .result-section {
+            margin-top: 40px;
+            padding: 30px;
+            background: #f9f9f9;
+            border-radius: 10px;
+            border-left: 5px solid var(--primary);
+        }
+        
+        .dark-mode .result-section {
+            background: #252525;
+        }
+        
+        .result-item {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            flex-wrap: wrap;
+        }
+        
+        .dark-mode .result-item {
+            border-bottom-color: #444;
+        }
+        
+        .result-item:last-child {
+            border-bottom: none;
+        }
+        
+        .result-label {
+            font-weight: bold;
+            color: var(--primary);
+            min-width: 200px;
+            margin-bottom: 5px;
+        }
+        
+        .recommendation {
+            background: #e8f4fd;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .dark-mode .recommendation {
+            background: #1a2e3d;
+        }
+        
+        .warning {
+            background: #fff3e0;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid var(--danger);
+        }
+        
+        .dark-mode .warning {
+            background: #3a2a1a;
+        }
+        
+        /* التبويبات */
+        .tab-container {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .dark-mode .tab-container {
+            border-bottom-color: #444;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .tab:hover {
+            color: var(--primary);
+        }
+        
+        .tab.active {
+            border-bottom-color: var(--primary);
+            font-weight: bold;
+        }
+        
+        /* الرسوم البيانية */
+        .chart-container {
+            margin: 30px 0;
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+        
+        /* حاسبة الألواح */
+        .solar-calculator {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .solar-calculator input {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        /* جدول المقارنة */
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: var(--shadow);
+        }
+        
+        .comparison-table th, .comparison-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+        }
+        
+        .dark-mode .comparison-table th,
+        .dark-mode .comparison-table td {
+            border-color: #444;
+        }
+        
+        .comparison-table th {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .comparison-table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        
+        .dark-mode .comparison-table tr:nth-child(even) {
+            background-color: var(--dark-mode-card);
+        }
+        
+        /* المشاريع المحفوظة */
+        .saved-projects {
+            margin-top: 30px;
+        }
+        
+        .project-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            transition: all 0.3s;
+        }
+        
+        .dark-mode .project-card {
+            background: var(--dark-mode-card);
+        }
+        
+        .project-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        
+        .project-info {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        /* أدوات مساعدة */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+            margin-right: 5px;
+        }
+        
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: var(--dark);
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 10px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 14px;
+            font-weight: normal;
+        }
+        
+        .dark-mode .tooltip .tooltiptext {
+            background-color: #444;
+        }
+        
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        /* نظام المحاكاة */
+        .simulation-container {
+            margin: 30px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            background: #f9f9f9;
+        }
+        
+        .dark-mode .simulation-container {
+            background: #252525;
+            border-color: #444;
+        }
+        
+        .simulation-canvas {
+            width: 100%;
+            height: 300px;
+            background: white;
+            border-radius: 4px;
+            margin-top: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .dark-mode .simulation-canvas {
+            background: #333;
+        }
+        
+        /* التكيف مع الجوال */
+        @media (max-width: 768px) {
+            .wizard-container {
+                flex-direction: column;
+            }
+            
+            .wizard-nav {
+                position: static;
+                margin-bottom: 20px;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+                padding: 0 20px;
+            }
+            
+            .subtitle {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <button class="theme-toggle" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+            <h1><i class="fas fa-solar-panel"></i> مهندس الطاقة الشمسية الذكي</h1>
+            <p class="subtitle">نظام متكامل لتصميم وتركيب الأنظمة الشمسية بدقة المهندسين المحترفين</p>
+        </header>
+        
+        <div class="wizard-container">
+            <div class="wizard-nav">
+                <div class="nav-step active" data-step="1">
+                    <span class="step-icon"><i class="fas fa-info-circle"></i></span>
+                    <span>معلومات المشروع</span>
+                </div>
+                <div class="nav-step" data-step="2">
+                    <span class="step-icon"><i class="fas fa-bolt"></i></span>
+                    <span>الاحتياجات الكهربائية</span>
+                </div>
+                <div class="nav-step" data-step="3">
+                    <span class="step-icon"><i class="fas fa-map-marker-alt"></i></span>
+                    <span>الموقع والإشعاع</span>
+                </div>
+                <div class="nav-step" data-step="4">
+                    <span class="step-icon"><i class="fas fa-cogs"></i></span>
+                    <span>مكونات النظام</span>
+                </div>
+                <div class="nav-step" data-step="5">
+                    <span class="step-icon"><i class="fas fa-chart-bar"></i></span>
+                    <span>النتائج والتوصيات</span>
+                </div>
+                <div class="nav-step" data-step="6">
+                    <span class="step-icon"><i class="fas fa-save"></i></span>
+                    <span>المشاريع المحفوظة</span>
+                </div>
+            </div>
+            
+            <div class="wizard-content">
+                <!-- الخطوة 1: معلومات المشروع -->
+                <div class="step active" id="step1">
+                    <h2><i class="fas fa-info-circle"></i> معلومات المشروع الأساسية</h2>
+                    <p>الرجاء إدخال المعلومات الأساسية عن مشروعك لمساعدتنا في تقديم أفضل الحلول</p>
+                    
+                    <div class="form-group">
+                        <label for="project-name">اسم المشروع</label>
+                        <input type="text" id="project-name" placeholder="مثال: نظام شمسي لمنزل - نظام ري بالطاقة الشمسية">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="project-type">نوع المشروع</label>
+                        <select id="project-type">
+                            <option value="residential">منزلي</option>
+                            <option value="agricultural">زراعي/ري</option>
+                            <option value="commercial">تجاري/صناعي</option>
+                            <option value="other">أخرى</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="project-description">وصف المشروع (اختياري)</label>
+                        <textarea id="project-description" rows="3" placeholder="وصف مختصر عن احتياجاتك وأهدافك من النظام الشمسي"></textarea>
+                    </div>
+                    
+                    <div class="btn-group">
+                        <button class="btn btn-primary next-step" data-next="2">التالي <i class="fas fa-arrow-left"></i></button>
+                    </div>
+                </div>
+                
+                <!-- الخطوة 2: الاحتياجات الكهربائية -->
+                <div class="step" id="step2">
+                    <h2><i class="fas fa-bolt"></i> الاحتياجات الكهربائية</h2>
+                    <p>حدد الأجهزة التي ترغب في تشغيلها بالطاقة الشمسية ومواصفاتها</p>
+                    
+                    <div class="tab-container">
+                        <div class="tab active" data-tab="loads">الأحمال الكهربائية</div>
+                        <div class="tab" data-tab="motor">المضخات والمحركات</div>
+                    </div>
+                    
+                    <div class="tab-content active" id="loads-tab">
+                        <div class="form-group">
+                            <label>أضف الأجهزة الكهربائية</label>
+                            <div id="appliances-container">
+                                <!-- سيتم إضافة الأجهزة هنا ديناميكياً -->
+                            </div>
+                            <button type="button" class="btn btn-secondary" id="add-appliance" style="margin-top: 10px;">
+                                <i class="fas fa-plus"></i> إضافة جهاز
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-content" id="motor-tab">
+                        <div class="form-group">
+                            <label for="motor-type">نوع المضخة/المحرك</label>
+                            <select id="motor-type">
+                                <option value="water-pump">مضخة مياه</option>
+                                <option value="ac">مكيف هواء</option>
+                                <option value="other">محرك آخر</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="motor-power">قدرة المحرك</label>
+                            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                                <input type="number" id="motor-power" placeholder="القيمة" style="flex: 1;">
+                                <select id="motor-power-unit" style="flex: 1; min-width: 120px;">
+                                    <option value="hp">حصان</option>
+                                    <option value="kw">كيلوواط</option>
+                                    <option value="watt">واط</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="motor-hours">ساعات التشغيل اليومية</label>
+                            <input type="number" id="motor-hours" placeholder="عدد الساعات" value="8">
+                        </div>
+                        
+                        <div class="warning">
+                            <i class="fas fa-exclamation-triangle"></i> <strong>ملاحظة:</strong> المحركات الكبيرة تحتاج إلى عناية خاصة في حساب تيار البدء (Starting Current) الذي قد يصل إلى 3-7 أضعاف التيار العادي.
+                        </div>
+                    </div>
+                    
+                    <div class="btn-group">
+                        <button class="btn btn-secondary prev-step" data-prev="1"><i class="fas fa-arrow-right"></i> السابق</button>
+                        <button class="btn btn-primary next-step" data-next="3">التالي <i class="fas fa-arrow-left"></i></button>
+                    </div>
+                </div>
+                
+                <!-- الخطوة 3: الموقع والإشعاع الشمسي -->
+                <div class="step" id="step3">
+                    <h2><i class="fas fa-map-marker-alt"></i> الموقع والإشعاع الشمسي</h2>
+                    <p>المعلومات عن موقعك تساعدنا في حساب الإنتاج اليومي للألواح الشمسية بدقة</p>
+                    
+                    <div class="form-group">
+                        <label for="project-location">المدينة/المنطقة</label>
+                        <input type="text" id="project-location" placeholder="مثال: الرياض، جدة، القاهرة">
+                        <p class="location-help">سيتم استخدام هذه المعلومات لتقدير ساعات الذروة الشمسية في منطقتك</p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="solar-hours">ساعات الذروة الشمسية اليومية</label>
+                        <div class="tooltip">
+                            <i class="fas fa-question-circle"></i>
+                            <span class="tooltiptext">عدد الساعات التي تكون فيها الشمس في ذروتها في منطقتك</span>
+                        </div>
+                        <input type="number" id="solar-hours" placeholder="عادة بين 3-7 ساعات" value="5">
+                        <p class="location-help">
+                            متوسط ساعات الذروة في المملكة العربية السعودية: 5-7 ساعات<br>
+                            دول الخليج: 4.5-6 ساعات<br>
+                            شمال أفريقيا: 4-5.5 ساعات
+                        </p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="roof-area">مساحة السطح المتاحة (متر مربع)</label>
+                        <input type="number" id="roof-area" placeholder="لحساب عدد الألواح التي يمكن تركيبها">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="system-type">نوع النظام المطلوب</label>
+                        <select id="system-type">
+                            <option value="off-grid">منفصل عن الشبكة (مع بطاريات)</option>
+                            <option value="on-grid">متصل بالشبكة (بدون بطاريات)</option>
+                            <option value="hybrid">هجين (مع بطاريات واتصال بالشبكة)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="btn-group">
+                        <button class="btn btn-secondary prev-step" data-prev="2"><i class="fas fa-arrow-right"></i> السابق</button>
+                        <button class="btn btn-primary next-step" data-next="4">التالي <i class="fas fa-arrow-left"></i></button>
+                    </div>
+                </div>
+                
+                <!-- الخطوة 4: مكونات النظام -->
+                <div class="step" id="step4">
+                    <h2><i class="fas fa-cogs"></i> مكونات النظام</h2>
+                    <p>حدد المواصفات المطلوبة لمكونات النظام الشمسي</p>
+                    
+                    <div class="form-group">
+                        <label for="panel-type">نوع الألواح الشمسية</label>
+                        <select id="panel-type">
+                            <option value="mono">ألواح مونو كريستال (عالية الكفاءة)</option>
+                            <option value="poly">ألواح بولي كريستال (اقتصادية)</option>
+                            <option value="thin-film">ألواح Thin Film (للأسطح الكبيرة)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="panel-wattage">قدرة اللوح الشمسي (واط)</label>
+                        <input type="number" id="panel-wattage" placeholder="عادة بين 300-600 واط" value="550">
+                    </div>
+                    
+                    <div id="battery-options" style="display: none;">
+                        <div class="form-group">
+                            <label for="battery-type">نوع البطاريات</label>
+                            <select id="battery-type">
+                                <option value="lead-acid">بطاريات الرصاص الحمضية (اقتصادية)</option>
+                                <option value="agm">بطاريات AGM (لا تحتاج صيانة)</option>
+                                <option value="lithium">بطاريات ليثيوم (عمر أطول، سعر أعلى)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="autonomy-days">أيام الاحتياطي (عند غياب الشمس)</label>
+                            <input type="number" id="autonomy-days" placeholder="عادة 1-3 أيام" value="1">
+                        </div>
+                    </div>
+                    
+                    <div class="btn-group">
+                        <button class="btn btn-secondary prev-step" data-prev="3"><i class="fas fa-arrow-right"></i> السابق</button>
+                        <button class="btn btn-primary" id="calculate-btn">حساب النظام <i class="fas fa-calculator"></i></button>
+                    </div>
+                </div>
+                
+                <!-- الخطوة 5: النتائج والتوصيات -->
+                <div class="step" id="step5">
+                    <h2><i class="fas fa-chart-bar"></i> النتائج والتوصيات</h2>
+                    <p>تصميم النظام الشمسي الأمثل بناءً على المدخلات المقدمة</p>
+                    
+                    <div class="result-section">
+                        <h3><i class="fas fa-solar-panel"></i> ملخص النظام</h3>
+                        
+                        <div class="result-item">
+                            <span class="result-label">إجمالي الحمل اليومي:</span>
+                            <span id="total-daily-load">0 كيلوواط/ساعة</span>
+                        </div>
+                        
+                        <div class="result-item">
+                            <span class="result-label">عدد الألواح الشمسية:</span>
+                            <span id="panels-count">0</span>
+                        </div>
+                        
+                        <div class="result-item">
+                            <span class="result-label">إجمالي قدرة الألواح:</span>
+                            <span id="total-panels-power">0 واط</span>
+                        </div>
+                        
+                        <div class="result-item" id="battery-result">
+                            <span class="result-label">سعة البطاريات المطلوبة:</span>
+                            <span id="batteries-capacity">0 أمبير/ساعة</span>
+                        </div>
+                        
+                        <div class="result-item">
+                            <span class="result-label">سعة الإنفيرتر:</span>
+                            <span id="inverter-size">0 كيلوواط</span>
+                        </div>
+                        
+                        <div class="result-item">
+                            <span class="result-label">منظم الشحن:</span>
+                            <span id="charge-controller">MPPT 0 أمبير</span>
+                        </div>
+                    </div>
+                    
+                    <!-- التحليلات المتقدمة -->
+                    <div class="result-section" id="advanced-results">
+                        <h3><i class="fas fa-chart-line"></i> التحليلات المتقدمة</h3>
+                        
+                        <div class="chart-container">
+                            <canvas id="energyChart"></canvas>
+                        </div>
+                        
+                        <h4><i class="fas fa-sun"></i> توجيه الألواح الشمسية</h4>
+                        <div class="solar-calculator">
+                            <input type="number" id="latitude-input" placeholder="أدخل خط العرض الجغرافي">
+                            <button class="btn btn-secondary" id="calculate-angle">
+                                حساب الزاوية المثالية <i class="fas fa-angle-double-down"></i>
+                            </button>
+                        </div>
+                        <div id="angle-result" style="margin-top: 15px;"></div>
+                        
+                        <h4 style="margin-top: 25px;"><i class="fas fa-balance-scale"></i> مقارنة بين أنواع الأنظمة</h4>
+                        <table class="comparison-table">
+                            <thead>
+                                <tr>
+                                    <th>النوع</th>
+                                    <th>التكلفة</th>
+                                    <th>العمر الافتراضي</th>
+                                    <th>المميزات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="system-comparison">
+                                <!-- سيتم ملؤها بالجافاسكريبت -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- التوصيات الذكية -->
+                    <div class="recommendation">
+                        <h3><i class="fas fa-lightbulb"></i> توصيات ذكية</h3>
+                        <div id="technical-recommendations">
+                            <p>سيتم عرض التوصيات الفنية هنا بعد الحساب...</p>
+                        </div>
+                    </div>
+                    
+                    <!-- محاكاة ثلاثية الأبعاد -->
+                    <div class="simulation-container" id="simulation-section">
+                        <h3><i class="fas fa-cube"></i> محاكاة توجيه الألواح</h3>
+                        <p>تصور ثلاثي الأبعاد لزوايا الألواح الشمسية المثلى في موقعك</p>
+                        <div class="simulation-canvas" id="simulation-canvas">
+                            <!-- سيتم إضافة المحاكاة هنا -->
+                            <p style="text-align: center; padding-top: 130px; color: #777;">
+                                محاكاة تفاعلية ستظهر هنا بعد إدخال بيانات الموقع
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="btn-group">
+                        <button class="btn btn-secondary prev-step" data-prev="4"><i class="fas fa-arrow-right"></i> السابق</button>
+                        <button class="btn btn-primary" id="save-project"><i class="fas fa-save"></i> حفظ المشروع</button>
+                        <button class="btn btn-primary" id="generate-report"><i class="fas fa-file-pdf"></i> تقرير PDF</button>
+                    </div>
+                </div>
+                
+                <!-- الخطوة 6: المشاريع المحفوظة -->
+                <div class="step" id="step6">
+                    <h2><i class="fas fa-save"></i> المشاريع المحفوظة</h2>
+                    <p>قائمة بمشاريعك السابقة التي قمت بحفظها</p>
+                    
+                    <div id="projects-list" class="saved-projects">
+                        <!-- سيتم ملؤها بالجافاسكريبت -->
+                        <p>جاري تحميل المشاريع المحفوظة...</p>
+                    </div>
+                    
+                    <div class="btn-group">
+                        <button class="btn btn-secondary prev-step" data-prev="5"><i class="fas fa-arrow-right"></i> السابق</button>
+                        <button class="btn btn-primary" id="new-project"><i class="fas fa-plus"></i> مشروع جديد</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // تطبيق الطاقة الشمسية المتكامل
+        document.addEventListener('DOMContentLoaded', function() {
+            // ===== متغيرات النظام =====
+            const systemData = {
+                projectName: '',
+                dailyLoad: 0,
+                solarHours: 5,
+                panelsCount: 0,
+                batteriesCount: 0,
+                inverterSize: 0,
+                chargeController: '',
+                savedAt: ''
+            };
+            
+            // ===== إدارة الواجهة =====
+            const steps = document.querySelectorAll('.step');
+            const navSteps = document.querySelectorAll('.nav-step');
+            const themeToggle = document.getElementById('themeToggle');
+            const systemTypeSelect = document.getElementById('system-type');
+            const batteryOptions = document.getElementById('battery-options');
+            
+            // تبديل وضع الليل/النهار
+            themeToggle.addEventListener('click', function() {
+                document.body.classList.toggle('dark-mode');
+                if (document.body.classList.contains('dark-mode')) {
+                    themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+                    localStorage.setItem('theme', 'dark');
+                } else {
+                    themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+                    localStorage.setItem('theme', 'light');
+                }
+            });
+            
+            // تحميل وضع الثيم من التخزين المحلي
+            if (localStorage.getItem('theme') === 'dark') {
+                document.body.classList.add('dark-mode');
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            }
+            
+            // إظهار/إخفاء خيارات البطاريات حسب نوع النظام
+            systemTypeSelect.addEventListener('change', function() {
+                batteryOptions.style.display = this.value === 'on-grid' ? 'none' : 'block';
+            });
+            
+            // ===== التنقل بين الخطوات =====
+            function goToStep(stepNum) {
+                // إخفاء كل الخطوات
+                steps.forEach(step => step.classList.remove('active'));
+                navSteps.forEach(step => step.classList.remove('active'));
+                
+                // إظهار الخطوة المطلوبة
+                document.getElementById(`step${stepNum}`).classList.add('active');
+                document.querySelector(`.nav-step[data-step="${stepNum}"]`).classList.add('active');
+                
+                // تعليم الخطوات المكتملة
+                for (let i = 1; i < stepNum; i++) {
+                    document.querySelector(`.nav-step[data-step="${i}"]`).classList.add('completed');
+                }
+                
+                // إذا كانت الخطوة 6 (المشاريع المحفوظة)، قم بتحميلها
+                if (stepNum == 6) {
+                    loadSavedProjects();
+                }
+            }
+            
+            // أحداث التنقل
+            document.querySelectorAll('.next-step').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const nextStep = this.getAttribute('data-next');
+                    goToStep(nextStep);
+                });
+            });
+            
+            document.querySelectorAll('.prev-step').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const prevStep = this.getAttribute('data-prev');
+                    goToStep(prevStep);
+                });
+            });
+            
+            navSteps.forEach(step => {
+                step.addEventListener('click', function() {
+                    const stepNum = this.getAttribute('data-step');
+                    goToStep(stepNum);
+                });
+            });
+            
+            // ===== إدارة التبويبات =====
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    
+                    document.querySelectorAll('.tab-content').forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    
+                    tabs.forEach(t => t.classList.remove('active'));
+                    
+                    document.getElementById(`${tabId}-tab`).classList.add('active');
+                    this.classList.add('active');
+                });
+            });
+            
+            // ===== إدارة الأجهزة الكهربائية =====
+            const addApplianceBtn = document.getElementById('add-appliance');
+            const appliancesContainer = document.getElementById('appliances-container');
+            
+            addApplianceBtn.addEventListener('click', function() {
+                const applianceDiv = document.createElement('div');
+                applianceDiv.className = 'appliance-item';
+                applianceDiv.style.marginBottom = '15px';
+                applianceDiv.style.padding = '15px';
+                applianceDiv.style.backgroundColor = '#f5f5f5';
+                applianceDiv.style.borderRadius = '8px';
+                applianceDiv.innerHTML = `
+                    <div style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
+                        <input type="text" placeholder="اسم الجهاز" class="appliance-name" style="flex: 2; min-width: 200px;">
+                        <input type="number" placeholder="القدرة" class="appliance-power" style="flex: 1; min-width: 100px;">
+                        <select class="appliance-unit" style="flex: 1; min-width: 100px;">
+                            <option value="watt">واط</option>
+                            <option value="kw">كيلوواط</option>
+                        </select>
+                    </div>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <input type="number" placeholder="عدد الساعات" class="appliance-hours" style="flex: 1; min-width: 120px;">
+                        <input type="number" placeholder="الكمية" class="appliance-quantity" value="1" style="flex: 1; min-width: 100px;">
+                        <button type="button" class="btn btn-secondary remove-appliance" style="flex: 1; padding: 8px; min-width: 100px;">
+                            <i class="fas fa-trash"></i> حذف
+                        </button>
+                    </div>
+                `;
+                
+                appliancesContainer.appendChild(applianceDiv);
+                
+                // إضافة حدث لحذف الجهاز
+                applianceDiv.querySelector('.remove-appliance').addEventListener('click', function() {
+                    appliancesContainer.removeChild(applianceDiv);
+                });
+            });
+            
+            // إضافة جهاز افتراضي عند التحميل
+            addApplianceBtn.click();
+            
+            // ===== حساب النظام الشمسي =====
+            const calculateBtn = document.getElementById('calculate-btn');
+            calculateBtn.addEventListener('click', calculateSystem);
+            
+            function calculateSystem() {
+                // حساب الحمل الكهربائي
+                let totalDailyLoad = 0;
+                let maxLoad = 0;
+                
+                // 1. حساب أحمال الأجهزة الكهربائية
+                const applianceItems = document.querySelectorAll('.appliance-item');
+                applianceItems.forEach(item => {
+                    const power = parseFloat(item.querySelector('.appliance-power').value) || 0;
+                    const unit = item.querySelector('.appliance-unit').value;
+                    const hours = parseFloat(item.querySelector('.appliance-hours').value) || 0;
+                    const quantity = parseFloat(item.querySelector('.appliance-quantity').value) || 1;
+                    
+                    let powerInWatt = power;
+                    if (unit === 'kw') powerInWatt = power * 1000;
+                    
+                    totalDailyLoad += powerInWatt * hours * quantity;
+                    maxLoad += powerInWatt * quantity;
+                });
+                
+                // 2. حساب أحمال المحركات إذا وجدت
+                const motorPower = parseFloat(document.getElementById('motor-power').value) || 0;
+                const motorUnit = document.getElementById('motor-power-unit').value;
+                const motorHours = parseFloat(document.getElementById('motor-hours').value) || 0;
+                
+                if (motorPower > 0) {
+                    let motorPowerInWatt = motorPower;
+                    if (motorUnit === 'hp') motorPowerInWatt = motorPower * 746;
+                    else if (motorUnit === 'kw') motorPowerInWatt = motorPower * 1000;
+                    
+                    // إضافة تيار البدء (نضرب في 1.5 كنموذج)
+                    totalDailyLoad += motorPowerInWatt * motorHours * 1.5;
+                    maxLoad += motorPowerInWatt * 3; // تيار البدء = 3x التيار العادي
+                }
+                
+                systemData.dailyLoad = totalDailyLoad / 1000; // تحويل إلى كيلوواط/ساعة
+                
+                // حساب الألواح الشمسية
+                const solarHours = parseFloat(document.getElementById('solar-hours').value) || 5;
+                const panelWattage = parseFloat(document.getElementById('panel-wattage').value) || 550;
+                
+                // الطاقة المطلوبة من الألواح (مع هامش 20% للفقد)
+                const requiredPanelOutput = (totalDailyLoad / solarHours) * 1.2;
+                systemData.panelsCount = Math.ceil(requiredPanelOutput / panelWattage);
+                
+                // حساب البطاريات إذا كان النظام off-grid أو hybrid
+                const systemType = document.getElementById('system-type').value;
+                if (systemType !== 'on-grid') {
+                    const batteryType = document.getElementById('battery-type').value;
+                    const autonomyDays = parseFloat(document.getElementById('autonomy-days').value) || 1;
+                    
+                    // حساب سعة البطاريات (نظام 48V)
+                    let batteryCapacity = (totalDailyLoad * autonomyDays) / 0.5; // تفريش 50%
+                    batteryCapacity = batteryCapacity / 48; // تحويل إلى أمبير/ساعة
+                    
+                    // حسب نوع البطارية
+                    let batteriesCount;
+                    if (batteryType === 'lithium') {
+                        batteriesCount = Math.ceil(batteryCapacity / 200); // بطاريات ليثيوم 200Ah
+                    } else {
+                        batteriesCount = Math.ceil(batteryCapacity / 150); // بطاريات رصاص 150Ah
+                    }
+                    
+                    systemData.batteriesCount = batteriesCount;
+                    systemData.batteryCapacity = Math.ceil(batteryCapacity);
+                }
+                
+                // حساب الإنفيرتر
+                systemData.inverterSize = Math.ceil(maxLoad / 1000) + 1; // كيلوواط + هامش
+                
+                // حساب منظم الشحن
+                const totalPanelsPower = systemData.panelsCount * panelWattage;
+                systemData.chargeController = `MPPT ${Math.ceil(totalPanelsPower / 48)} أمبير`;
+                
+                // حفظ وقت الحساب
+                systemData.savedAt = new Date().toLocaleString();
+                
+                // عرض النتائج
+                displayResults();
+                
+                // الذهاب إلى صفحة النتائج
+                goToStep(5);
+            }
+            
+            function displayResults() {
+                document.getElementById('total-daily-load').textContent = `${systemData.dailyLoad.toFixed(2)} كيلوواط/ساعة`;
+                document.getElementById('panels-count').textContent = `${systemData.panelsCount} لوح`;
+                
+                const panelWattage = parseFloat(document.getElementById('panel-wattage').value) || 550;
+                document.getElementById('total-panels-power').textContent = `${systemData.panelsCount * panelWattage} واط`;
+                
+                const systemType = document.getElementById('system-type').value;
+                if (systemType !== 'on-grid') {
+                    document.getElementById('battery-result').style.display = 'flex';
+                    document.getElementById('batteries-capacity').textContent = 
+                        `${systemData.batteryCapacity} أمبير/ساعة (${systemData.batteriesCount} بطارية)`;
+                } else {
+                    document.getElementById('battery-result').style.display = 'none';
+                }
+                
+                document.getElementById('inverter-size').textContent = `${systemData.inverterSize} كيلوواط`;
+                document.getElementById('charge-controller').textContent = systemData.chargeController;
+                
+                // توليد الرسوم البيانية
+                renderEnergyChart();
+                
+                // عرض مقارنة الأنظمة
+                renderSystemComparison();
+                
+                // توليد التوصيات الذكية
+                generateSmartRecommendations();
+                
+                // تحديث المحاكاة
+                updateSimulation();
+            }
+            
+            // ===== الرسوم البيانية =====
+            function renderEnergyChart() {
+                const ctx = document.getElementById('energyChart').getContext('2d');
+                const dailyLoad = systemData.dailyLoad;
+                const solarProduction = (systemData.panelsCount * 
+                                      parseFloat(document.getElementById('panel-wattage').value) * 
+                                      parseFloat(document.getElementById('solar-hours').value) / 1000;
+                
+                if (window.energyChart) {
+                    window.energyChart.destroy();
+                }
+                
+                window.energyChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['الاستهلاك اليومي', 'الإنتاج المتوقع'],
+                        datasets: [{
+                            label: 'كيلوواط/ساعة',
+                            data: [dailyLoad, solarProduction],
+                            backgroundColor: [
+                                'rgba(238, 108, 77, 0.7)',
+                                'rgba(92, 184, 92, 0.7)'
+                            ],
+                            borderColor: [
+                                'rgba(238, 108, 77, 1)',
+                                'rgba(92, 184, 92, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'كيلوواط/ساعة'
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                                rtl: true
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return context.parsed.y.toFixed(2) + ' كيلوواط/ساعة';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // ===== مقارنة الأنظمة =====
+            function renderSystemComparison() {
+                const comparisonData = [
+                    {
+                        type: "On-Grid",
+                        cost: "منخفضة",
+                        lifespan: "25+ سنة",
+                        features: "لا يحتاج بطاريات، يمكن بيع الفائض"
+                    },
+                    {
+                        type: "Off-Grid",
+                        cost: "عالية",
+                        lifespan: "5-15 سنة",
+                        features: "مستقل تماماً، يحتاج بطاريات كبيرة"
+                    },
+                    {
+                        type: "هجين",
+                        cost: "متوسطة",
+                        lifespan: "10-20 سنة",
+                        features: "يجمع مزايا النظامين، مرن في الاستخدام"
+                    }
+                ];
+                
+                let tableHtml = '';
+                comparisonData.forEach(item => {
+                    tableHtml += `
+                        <tr>
+                            <td>${item.type}</td>
+                            <td>${item.cost}</td>
+                            <td>${item.lifespan}</td>
+                            <td>${item.features}</td>
+                        </tr>
+                    `;
+                });
+                
+                document.getElementById('system-comparison').innerHTML = tableHtml;
+            }
+            
+            // ===== التوصيات الذكية =====
+            function generateSmartRecommendations() {
+                let recommendations = '<ul>';
+                
+                // توصية بناء على حجم النظام
+                if (systemData.dailyLoad < 10) {
+                    recommendations += '<li>هذا النظام صغير الحجم، يمكن استخدام إنفيرتر ذي موجة جيبية معدلة (Modified Sine Wave) لتوفير التكلفة</li>';
+                } else {
+                    recommendations += '<li>نظراً لحجم النظام، نوصي باستخدام إنفيرتر ذي موجة جيبية نقية (Pure Sine Wave) للحصول على أداء أفضل</li>';
+                }
+                
+                // توصية بناء على عدد الألواح
+                if (systemData.panelsCount > 15) {
+                    recommendations += '<li>لعدد الألواح الكبير، نوصي بتقسيمها إلى سلاسل (Strings) متعددة لتحسين الأداء</li>';
+                }
+                
+                // توصية بناء على نوع النظام
+                const systemType = document.getElementById('system-type').value;
+                if (systemType === 'off-grid' && systemData.batteriesCount > 4) {
+                    recommendations += '<li>لحماية البطاريات، نوصي باستخدام نظام إدارة البطاريات (BMS) خاصة إذا كانت من نوع الليثيوم</li>';
+                }
+                
+                recommendations += '<li>استخدم أسلاكاً ذات مقطع مناسب (يفضل 4 مم² أو أكثر للأنظمة الكبيرة) لتقليل الفقد في الطاقة</li>';
+                recommendations += '<li>افحص النظام كل 6 أشهر وتأكد من نظافة الألواح الشمسية</li>';
+                
+                // تحذيرات خاصة
+                if (systemData.dailyLoad > 20) {
+                    recommendations += '</ul><div class="warning"><i class="fas fa-exclamation-triangle"></i> <strong>تحذير:</strong> الأنظمة الكبيرة (أكثر من 20 كيلوواط/ساعة يوميًا) تحتاج إلى دراسة دقيقة من مهندس متخصص وموافقات رسمية في بعض الدول</div>';
+                } else {
+                    recommendations += '</ul>';
+                }
+                
+                document.getElementById('technical-recommendations').innerHTML = recommendations;
+            }
+            
+            // ===== حاسبة توجيه الألواح =====
+            document.getElementById('calculate-angle').addEventListener('click', function() {
+                const latitude = parseFloat(document.getElementById('latitude-input').value);
+                if (!isNaN(latitude)) {
+                    const optimalAngle = latitude * 0.9 + 29;
+                    const winterAngle = optimalAngle + 15;
+                    const summerAngle = optimalAngle - 15;
+                    
+                    document.getElementById('angle-result').innerHTML = `
+                        <div class="result-item">
+                            <span class="result-label">الزاوية السنوية المثالية:</span>
+                            <span>${optimalAngle.toFixed(1)} درجة</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">للشتاء (أكتوبر - مارس):</span>
+                            <span>${winterAngle.toFixed(1)} درجة</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">للصيف (أبريل - سبتمبر):</span>
+                            <span>${summerAngle.toFixed(1)} درجة</span>
+                        </div>
+                        <p style="margin-top: 10px; color: var(--secondary);">
+                            <i class="fas fa-lightbulb"></i> نصائح: اضبط الألواح على الزاوية ${optimalAngle.toFixed(1)} درجة للاستفادة القصوى من أشعة الشمس على مدار العام.
+                        </p>
+                    `;
+                    
+                    // تحديث المحاكاة بالزاوية الجديدة
+                    updateSimulation(optimalAngle);
+                } else {
+                    alert('الرجاء إدخال قيمة صحيحة لخط العرض');
+                }
+            });
+            
+            // ===== محاكاة توجيه الألواح =====
+            function updateSimulation(angle = 30) {
+                const canvas = document.getElementById('simulation-canvas');
+                canvas.innerHTML = `
+                    <div style="text-align: center; padding-top: 20px;">
+                        <div style="display: inline-block; position: relative;">
+                            <div style="width: 200px; height: 20px; background: #888; border-radius: 3px; margin-bottom: 10px;"></div>
+                            <div style="width: 200px; height: 120px; background: #2E86AB; position: relative; 
+                                transform: rotate(${-angle}deg); transform-origin: bottom center; border-radius: 5px;">
+                                <div style="position: absolute; top: 10px; left: 50%; transform: translateX(-50%); 
+                                    color: white; font-weight: bold;">${angle}°</div>
+                            </div>
+                            <div style="position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%);
+                                width: 100%; text-align: center; color: #777;">
+                                محاكاة توجيه الألواح الشمسية
+                            </div>
+                        </div>
+                    </div>
+                    <p style="text-align: center; margin-top: 30px; color: #555;">
+                        <i class="fas fa-info-circle"></i> هذه محاكاة مبسطة لتوجيه الألواح الشمسية
+                    </p>
+                `;
+            }
+            
+            // ===== إدارة المشاريع المحفوظة =====
+            document.getElementById('save-project').addEventListener('click', saveProject);
+            document.getElementById('new-project').addEventListener('click', newProject);
+            
+            function saveProject() {
+                const projectName = document.getElementById('project-name').value || "مشروع بدون اسم";
+                const projectType = document.getElementById('project-type').value;
+                const projectDesc = document.getElementById('project-description').value;
+                
+                const projectData = {
+                    name: projectName,
+                    type: projectType,
+                    description: projectDesc,
+                    date: new Date().toLocaleString(),
+                    systemData: systemData
+                };
+                
+                let projects = JSON.parse(localStorage.getItem('solarProjects') || '[]');
+                projects.push(projectData);
+                localStorage.setItem('solarProjects', JSON.stringify(projects));
+                
+                alert(`تم حفظ المشروع "${projectName}" بنجاح!`);
+                loadSavedProjects();
+            }
+            
+            function loadSavedProjects() {
+                const projects = JSON.parse(localStorage.getItem('solarProjects') || '[]');
+                const projectsList = document.getElementById('projects-list');
+                
+                if (projects.length === 0) {
+                    projectsList.innerHTML = '<p>لا يوجد مشاريع محفوظة بعد</p>';
+                    return;
+                }
+                
+                let html = '';
+                projects.forEach((project, index) => {
+                    html += `
+                        <div class="project-card">
+                            <div class="project-info">
+                                <h4>${project.name}</h4>
+                                <p><i class="fas fa-calendar-alt"></i> ${project.date}</p>
+                                <p><i class="fas fa-bolt"></i> ${project.systemData.dailyLoad.toFixed(2)} كيلوواط/ساعة يومياً</p>
+                                <p><i class="fas fa-solar-panel"></i> ${project.systemData.panelsCount} لوح شمسي</p>
+                            </div>
+                            <div>
+                                <button class="btn btn-secondary" onclick="loadProjectFromStorage(${index})">
+                                    <i class="fas fa-eye"></i> عرض
+                                </button>
+                                <button class="btn btn-secondary" onclick="deleteProject(${index})" style="margin-top: 5px;">
+                                    <i class="fas fa-trash"></i> حذف
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                projectsList.innerHTML = html;
+            }
+            
+            function newProject() {
+                if (confirm('هل تريد بدء مشروع جديد؟ سيتم مسح البيانات الحالية.')) {
+                    // مسح حقول الإدخال
+                    document.getElementById('project-name').value = '';
+                    document.getElementById('project-description').value = '';
+                    document.getElementById('project-type').value = 'residential';
+                    
+                    // مسح الأجهزة وإضافة جهاز افتراضي
+                    document.getElementById('appliances-container').innerHTML = '';
+                    addApplianceBtn.click();
+                    
+                    // مسح بيانات المحرك
+                    document.getElementById('motor-power').value = '';
+                    document.getElementById('motor-hours').value = '8';
+                    
+                    // الذهاب إلى الخطوة الأولى
+                    goToStep(1);
+                }
+            }
+            
+            // دالة لتحميل مشروع من التخزين
+            window.loadProjectFromStorage = function(index) {
+                const projects = JSON.parse(localStorage.getItem('solarProjects') || '[]');
+                if (projects[index]) {
+                    const project = projects[index];
+                    
+                    // تعبئة بيانات المشروع
+                    document.getElementById('project-name').value = project.name;
+                    document.getElementById('project-type').value = project.type;
+                    document.getElementById('project-description').value = project.description || '';
+                    
+                    // يمكنك هنا تعبئة بقية الحقول حسب حاجة التطبيق
+                    
+                    // الذهاب إلى صفحة النتائج
+                    Object.assign(systemData, project.systemData);
+                    displayResults();
+                    goToStep(5);
+                }
+            };
+            
+            // دالة لحذف مشروع
+            window.deleteProject = function(index) {
+                if (confirm('هل أنت متأكد من رغبتك في حذف هذا المشروع؟')) {
+                    let projects = JSON.parse(localStorage.getItem('solarProjects') || '[]');
+                    projects.splice(index, 1);
+                    localStorage.setItem('solarProjects', JSON.stringify(projects));
+                    loadSavedProjects();
+                }
+            };
+            
+            // ===== تقرير PDF =====
+            document.getElementById('generate-report').addEventListener('click', function() {
+                const projectName = document.getElementById('project-name').value || "مشروع الطاقة الشمسية";
+                alert(`سيتم إنشاء تقرير PDF للمشروع "${projectName}".\n\nهذه الميزة تحتاج إلى اتصال بالإنترنت لاستخدام مكتبة jsPDF.`);
+                
+                // في التطبيق الحقيقي، يمكنك استخدام مكتبة jsPDF لإنشاء التقرير
+                // مثال: 
+                // const doc = new jsPDF();
+                // doc.text('تقرير النظام الشمسي', 10, 10);
+                // doc.save('تقرير-الطاقة-الشمسية.pdf');
+            });
+            
+            // ===== تهيئة أولية =====
+            renderSystemComparison();
+            updateSimulation();
+            
+            // إذا كان هناك مشروع في عنوان URL (للمشاركة)
+            if (window.location.hash) {
+                try {
+                    const projectData = JSON.parse(decodeURIComponent(window.location.hash.substr(1)));
+                    Object.assign(systemData, projectData);
+                    displayResults();
+                    goToStep(5);
+                } catch (e) {
+                    console.error('Error loading project from URL', e);
+                }
+            }
+        });
+    </script>
+</body>
+  </html>
